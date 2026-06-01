@@ -83,6 +83,16 @@ def create_app() -> FastAPI:
     ) -> Stats:
         return crud.compute_stats(session, device_id, metric, since, until)
 
+    @app.get("/api/alerts", response_model=list[ReadingOut])
+    def alerts(
+        threshold: float,
+        session: Session = Depends(get_session),
+        metric: str | None = None,
+        limit: int = Query(default=100, ge=1, le=10_000),
+    ) -> list[ReadingOut]:
+        rows = crud.readings_over_limit(session, threshold, metric, limit)
+        return [ReadingOut.model_validate(r) for r in rows]
+
     return app
 
 

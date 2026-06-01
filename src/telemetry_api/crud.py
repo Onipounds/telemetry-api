@@ -109,3 +109,19 @@ def compute_stats(
         first_ts=first_ts,
         last_ts=last_ts,
     )
+def readings_over_limit(
+    session: Session,
+    threshold: float,
+    metric: str | None = None,
+    limit: int = 100,
+) -> list[Reading]:
+    """Alert query: readings whose value exceeds a threshold.
+
+    Demonstrates a filtered SELECT with a comparison on the value column,
+    ordered worst-first.
+    """
+    stmt = select(Reading).where(Reading.value > threshold)
+    if metric:
+        stmt = stmt.where(Reading.metric == metric)
+    stmt = stmt.order_by(Reading.value.desc()).limit(limit)
+    return list(session.scalars(stmt))
