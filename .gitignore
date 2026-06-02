@@ -7,3 +7,9 @@ venv/
 build/
 dist/
 *.db
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
