@@ -1,7 +1,5 @@
 """FastAPI application: thin web layer over the CRUD functions.
-
     uvicorn telemetry_api.app:app --reload
-
 Endpoints
     GET  /health
     POST /api/readings                 ingest a batch of readings (auth)
@@ -10,7 +8,6 @@ Endpoints
     GET  /api/devices/{id}/latest      latest reading per metric for a device
     GET  /api/stats                    aggregate stats for a device + metric
 """
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -22,6 +19,7 @@ from . import crud
 from .config import get_settings
 from .db import get_session, init_engine
 from .schemas import IngestResult, ReadingIn, ReadingOut, Stats
+from prometheus_fastapi_instrumentator import Instrumentator
 
 
 def require_api_key(x_api_key: str | None = Header(default=None)) -> None:
@@ -93,6 +91,7 @@ def create_app() -> FastAPI:
         rows = crud.readings_over_limit(session, threshold, metric, limit)
         return [ReadingOut.model_validate(r) for r in rows]
 
+    Instrumentator().instrument(app).expose(app)
     return app
 
 
