@@ -1,0 +1,13 @@
+replicaCount: 2
+
+image:
+  repository: sentinel690/telemetry-api
+  tag: "1.2"
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+service:
+  port: 8080
+
+probePath: /health
